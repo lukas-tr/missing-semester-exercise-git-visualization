@@ -1,5 +1,5 @@
 [package]
-name = "app"
+name = "git-visualization"
 version = "0.0.0"
 description = "A Tauri App"
 authors = ["you"]
@@ -17,6 +17,7 @@ tauri-build = { version = "1.1", features = [] }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "1.1", features = ["api-all"] }
+git2 = "0.15.0"
 
 [features]
 # by default Tauri runs in production mode
