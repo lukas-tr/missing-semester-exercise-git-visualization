@@ -1,5 +1,7 @@
 # Missing Semester Homework 1 (Git Visualization)
 
+> Displays some statistics about a git repository. Created with tauri and yew.
+
 ## Screenshots
 
 ![screenshot 1](./screenshot-1.png)
