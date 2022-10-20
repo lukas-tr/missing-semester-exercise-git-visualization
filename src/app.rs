@@ -1,34 +1,25 @@
-use serde::{Deserialize, Serialize};
-use serde_wasm_bindgen::to_value;
-use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
 
-#[wasm_bindgen]
-extern "C" {
-    #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "tauri"])]
-    async fn invoke(cmd: &str, args: JsValue) -> JsValue;
-
-    #[wasm_bindgen(js_namespace = console)]
-    fn log(s: &str);
-}
-
-#[derive(Serialize, Deserialize)]
-struct GreetArgs<'a> {
-    name: &'a str,
-}
+use crate::bindings::{get_repo_stats, GetRepoStatsArgs, show_error_message, GetRepoStatsResult};
+use crate::contributions_by_year::ContributionsByYear;
+use crate::repo_input::RepoInput;
+use crate::top_contributors::TopContributors;
 
 #[function_component(App)]
 pub fn app() -> Html {
-    let greet_input_ref = use_ref(|| NodeRef::default());
-
     let name = use_state(|| String::new());
+    let result = use_state(|| GetRepoStatsResult {
+        commits: 0,
+        contributors: 0,
+        contributions_by_year: vec![],
+        top_contributors: vec![],
+    });
 
-    let greet_msg = use_state(|| String::new());
     {
-        let greet_msg = greet_msg.clone();
         let name = name.clone();
         let name2 = name.clone();
+        let result = result.clone();
         use_effect_with_deps(
             move |_| {
                 spawn_local(async move {
@@ -36,14 +27,12 @@ pub fn app() -> Html {
                         return;
                     }
 
-                    // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-                    let new_msg = invoke(
-                        "greet",
-                        to_value(&GreetArgs { name: &*name }).unwrap(),
-                    )
-                    .await;
-                    log(&new_msg.as_string().unwrap());
-                    greet_msg.set(new_msg.as_string().unwrap());
+                    let res = get_repo_stats(GetRepoStatsArgs { path: &*name }).await;
+
+                    match res {
+                        Ok(val) => result.set(val.to_owned()),
+                        Err(e) => {show_error_message(e).await; return},
+                    }
                 });
 
                 || {}
@@ -52,42 +41,19 @@ pub fn app() -> Html {
         );
     }
 
-    let greet = {
+    let on_video_select = {
         let name = name.clone();
-        let greet_input_ref = greet_input_ref.clone();
-        Callback::from(move |_| {
-            name.set(greet_input_ref.cast::<web_sys::HtmlInputElement>().unwrap().value());
-        })
+        Callback::from(move |dir| name.set(dir))
     };
+
+    let contributors = (*result).clone().top_contributors;
+    let years = (*result).clone().contributions_by_year;
 
     html! {
         <main class="container">
-            <div class="row">
-                <a href="https://tauri.app" target="_blank">
-                    <img src="public/tauri.svg" class="logo tauri" alt="Tauri logo"/>
-                </a>
-                <a href="https://yew.rs" target="_blank">
-                    <img src="public/yew.png" class="logo yew" alt="Yew logo"/>
-                </a>
-            </div>
-
-            <p>{"Click on the Tauri and Yew logos to learn more."}</p>
-
-            <p>
-                {"Recommended IDE setup: "}
-                <a href="https://code.visualstudio.com/" target="_blank">{"VS Code"}</a>
-                {" + "}
-                <a href="https://github.com/tauri-apps/tauri-vscode" target="_blank">{"Tauri"}</a>
-                {" + "}
-                <a href="https://github.com/rust-lang/rust-analyzer" target="_blank">{"rust-analyzer"}</a>
-            </p>
-
-            <div class="row">
-                <input id="greet-input" ref={&*greet_input_ref} placeholder="Enter a name..." />
-                <button type="button" onclick={greet}>{"Greet"}</button>
-            </div>
-
-            <p><b>{ &*greet_msg }</b></p>
+            <RepoInput on_choose_dir={on_video_select.clone()} />
+            <TopContributors top_contributors={contributors} />
+            <ContributionsByYear contributions={years} />
         </main>
     }
 }
