@@ -3,6 +3,7 @@ mod repo_input;
 mod top_contributors;
 mod contributions_by_year;
 mod bindings;
+mod progress_bar;
 
 use app::App;
 

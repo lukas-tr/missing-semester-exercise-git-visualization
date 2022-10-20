@@ -48,12 +48,15 @@ pub fn app() -> Html {
 
     let contributors = (*result).clone().top_contributors;
     let years = (*result).clone().contributions_by_year;
+    let total = (*result).clone().commits;
 
     html! {
         <main class="container">
             <RepoInput on_choose_dir={on_video_select.clone()} />
+            <div class="row">
             <TopContributors top_contributors={contributors} />
-            <ContributionsByYear contributions={years} />
+                <ContributionsByYear total={total} contributions={years} />
+            </div>
         </main>
     }
 }

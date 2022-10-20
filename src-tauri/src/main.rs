@@ -46,19 +46,14 @@ struct RepoStats {
 fn get_repo_stats(path: &str) -> Result<RepoStats, TauriError> {
     let mut contributors: HashMap<String, Contributor> = HashMap::new();
     let mut commits_by_year: HashMap<i32, i64> = HashMap::new();
-    let repo_result = Repository::open(path);
-    let repo = match repo_result {
-        Ok(repo) => repo,
-        Err(e) => return Err(e.into()),
-    };
-
-    let mut revwalk = repo.revwalk().unwrap();
-    revwalk.set_sorting(git2::Sort::TIME).unwrap();
-    revwalk.push_head().unwrap();
+    let repo = Repository::open(path)?;
+    let mut revwalk = repo.revwalk()?;
+    revwalk.set_sorting(git2::Sort::TIME)?;
+    revwalk.push_head()?;
     let mut count = 0;
     for commit_id in revwalk {
-        let commit_id = commit_id.unwrap();
-        let commit = repo.find_commit(commit_id).unwrap();
+        let commit_id = commit_id?;
+        let commit = repo.find_commit(commit_id)?;
         let seconds = commit.time().seconds();
         let naive = NaiveDateTime::from_timestamp(seconds, 0);
         let datetime = DateTime::<Utc>::from_utc(naive, Utc);
@@ -82,9 +77,6 @@ fn get_repo_stats(path: &str) -> Result<RepoStats, TauriError> {
                 });
         };
     }
-    let mut top_contributors: Vec<Contributor> = contributors.values().cloned().collect();
-    top_contributors.sort_by(|a, b| b.commits.cmp(&a.commits));
-    top_contributors.truncate(10);
 
     let mut contributions_by_year: Vec<Year> = commits_by_year
         .iter()
@@ -94,6 +86,10 @@ fn get_repo_stats(path: &str) -> Result<RepoStats, TauriError> {
         })
         .collect();
     contributions_by_year.sort_by(|a, b| b.year.cmp(&a.year));
+
+    let mut top_contributors: Vec<Contributor> = contributors.values().cloned().collect();
+    top_contributors.sort_by(|a, b| b.commits.cmp(&a.commits));
+    top_contributors.truncate(contributions_by_year.len());
 
     Ok(RepoStats {
         commits: count,

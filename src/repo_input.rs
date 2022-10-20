@@ -44,9 +44,9 @@ pub fn repo_input(RepoInputProps { on_choose_dir }: &RepoInputProps) -> Html {
     };
 
     html! {
-        <div class="row">
-            <input id="directory-input" ref={&*directory_input_ref} placeholder="Enter a name..." />
-            <button type="button" onclick={analyze}>{"Analyze"}</button>
+        <div class="row mb-8">
+            <input class="grow mr-8" ref={&*directory_input_ref} placeholder="Enter path to git repository or click 'browse'..." />
+            <button type="button mr-8" onclick={analyze}>{"Analyze"}</button>
             <button type="button" onclick={browse}>{"Browse"}</button>
         </div>
     }
