@@ -47,12 +47,19 @@ pub struct MessageArgs<'a> {
     pub title: &'a str,
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+pub struct Word {
+    pub word: String,
+    pub occurences: i64,
+}
+
 #[derive(Serialize, Deserialize, Clone)]
 pub struct GetRepoStatsResult {
     pub commits: i64,
     pub contributors: i64,
     pub top_contributors: Vec<Contributor>,
     pub contributions_by_year: Vec<Year>,
+    pub top_words: Vec<Word>,
 }
 
 #[derive(Serialize, Deserialize)]

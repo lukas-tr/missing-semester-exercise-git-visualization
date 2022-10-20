@@ -4,6 +4,8 @@ mod top_contributors;
 mod contributions_by_year;
 mod bindings;
 mod progress_bar;
+mod stat_card;
+mod word_table;
 
 use app::App;
 

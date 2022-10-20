@@ -4,7 +4,9 @@ use yew::prelude::*;
 use crate::bindings::{get_repo_stats, GetRepoStatsArgs, show_error_message, GetRepoStatsResult};
 use crate::contributions_by_year::ContributionsByYear;
 use crate::repo_input::RepoInput;
+use crate::stat_card::StatCard;
 use crate::top_contributors::TopContributors;
+use crate::word_table::WordTable;
 
 #[function_component(App)]
 pub fn app() -> Html {
@@ -14,6 +16,7 @@ pub fn app() -> Html {
         contributors: 0,
         contributions_by_year: vec![],
         top_contributors: vec![],
+        top_words: vec![],
     });
 
     {
@@ -46,16 +49,21 @@ pub fn app() -> Html {
         Callback::from(move |dir| name.set(dir))
     };
 
-    let contributors = (*result).clone().top_contributors;
-    let years = (*result).clone().contributions_by_year;
-    let total = (*result).clone().commits;
+    let result = (*result).clone();
 
     html! {
         <main class="container">
             <RepoInput on_choose_dir={on_video_select.clone()} />
+            <div class="row mb-8">
+                <StatCard title="Commits" class="mr-8">{result.commits}</StatCard>
+                <StatCard title="Contributors">{result.contributors}</StatCard>
+            </div>
+            <div class="row mb-8">
+                <TopContributors top_contributors={result.top_contributors} />
+                <ContributionsByYear total={result.commits} contributions={result.contributions_by_year} />
+            </div>
             <div class="row">
-            <TopContributors top_contributors={contributors} />
-                <ContributionsByYear total={total} contributions={years} />
+                <WordTable words={result.top_words} />
             </div>
         </main>
     }

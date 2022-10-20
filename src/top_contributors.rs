@@ -3,6 +3,7 @@ use yew::prelude::*;
 
 use crate::bindings::Contributor;
 use crate::progress_bar::ProgressBar;
+use crate::stat_card::StatCard;
 
 #[derive(Clone, Properties, PartialEq)]
 pub struct TopContributorsProps {
@@ -25,9 +26,8 @@ pub fn repo_input(TopContributorsProps { top_contributors }: &TopContributorsPro
         .collect::<Html>();
 
     html! {
-            <div class="card w-50 mr-8">
-                <h2>{"Top Contributors"}</h2>
-                {result}
-            </div>
+        <StatCard title="Top Contributors" class="w-50 mr-8">
+            {result}
+        </StatCard>
     }
 }

@@ -3,6 +3,7 @@ use yew::prelude::*;
 
 use crate::bindings::Year;
 use crate::progress_bar::ProgressBar;
+use crate::stat_card::StatCard;
 
 #[derive(Clone, Properties, PartialEq)]
 pub struct ContributionsByYearProps {
@@ -26,9 +27,8 @@ pub fn repo_input(ContributionsByYearProps { contributions, total }: &Contributi
         .collect::<Html>();
 
     html! {
-            <div class="card w-50">
-            <h2>{"Contributions per Year"}</h2>
-                {result}
-            </div>
+        <StatCard title="Contributions per Year" class="w-50">
+            {result}
+        </StatCard>
     }
 }

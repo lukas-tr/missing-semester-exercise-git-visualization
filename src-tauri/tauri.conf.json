@@ -29,7 +29,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "com.lukastroyer.git-visualization-homework",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -55,7 +55,7 @@
     },
     "windows": [
       {
-        "fullscreen": false,
+        "maximized": true,
         "height": 600,
         "resizable": true,
         "title": "git-visualization",

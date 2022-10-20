@@ -37,12 +37,24 @@ body {
   margin-right: 8px;
 }
 
+.w-100 {
+  width: 100%;
+}
+
 .w-50 {
   width: 50%;
 }
 
+.w-25 {
+  width: 25%;
+}
+
 .grow {
   flex: 1 1 auto;
+}
+
+.inline-block {
+  display: inline-block;
 }
 
 input,
